@@ -18,22 +18,36 @@
 import keyboard
 import pyautogui
 
-enabled = False
+toggleable = True
+state = False
 
-while True:
-  toggled = keyboard.is_pressed('z')
+def main(event):
+  global toggleable
+  global state
 
-  if toggled:
-    if enabled:
-      print("Macro disabled.")
-      enabled = False
-    else:
-      print("Macro enabled.")
-      enabled = True
+  # Macro hotkey pressed
+  if event.name == 'z':
+    # Toggle
+    if event.event_type == 'down':
 
-  if toggled and not enabled:
-    pyautogui.mouseUp(0,0)
-    #pyautogui.keyUp('w')
-  elif enabled:
-    pyautogui.mouseDown(0,0)
-    #pyautogui.keyDown('w')
+      # Disable macro
+      if toggleable and state:
+        print("Toggle disabled")
+        state = False
+        pyautogui.mouseUp(0,0)
+        #keyboard.release('w')
+      # Enable macro
+      elif toggleable and not state:
+        print("Toggle enabled")
+        state = True
+        pyautogui.mouseDown(0,0)
+        #keyboard.press('w')
+
+      toggleable = False
+
+    # Toggleable again
+    elif event.event_type == 'up':
+      toggleable = True
+
+keyboard.hook(main)
+keyboard.wait()
